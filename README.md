@@ -16,7 +16,7 @@ with this project you may save your secret keys safely. All of your secret keys 
 - have docker-compose 
 - rename .env.example to .env
 
-### Rode os comandos:
+### run the commands:
 ```bash
 $ docker-compose build
 $ docker-compose up
