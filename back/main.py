@@ -7,16 +7,24 @@ from .app.settings import app
 
 @app.get("/")
 def read_root():
-    phrases = [phrase.as_json for phrase in Phrase.objects]
+    phrases = [phrase.as_json() for phrase in Phrase.objects]
     return phrases
 
 
 @app.get("/{phrase_id}")
-def detail_phrase(phrase_id):
+def detail_phrase(phrase_id: str):
     m_phrase = Phrase.objects(id=phrase_id).first()
     if m_phrase is None:
         raise HTTPException(status_code=404, detail="This phrase doesn't exists.")
-    return m_phrase.as_json
+    return m_phrase.as_json(decoded=True)
+
+
+@app.get("/decode-phrase/{phrase_id}")
+def decode_phrase(phrase_id: str):
+    m_phrase = Phrase.objects(id=phrase_id).first()
+    if m_phrase is None:
+        raise HTTPException(status_code=404, detail="This phrase doesn't exists.")
+    return {"message": m_phrase.message}
 
 
 @app.post("/create-phrase")

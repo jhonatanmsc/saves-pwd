@@ -6,7 +6,7 @@
           PWD
         </v-list-item-title>
         <v-list-item-subtitle>
-          api: {{API_BASE_URL}}
+          API: {{API_BASE_URL}}
         </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
@@ -36,7 +36,8 @@
 </template>
 
 <script>
-  import {API_URL} from '@/services/endpoints' 
+  import {API_URL} from '@/services/endpoints'
+  console.log(API_URL)
   export default {
     props: ['items'],
     data () {
