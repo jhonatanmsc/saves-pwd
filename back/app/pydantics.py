@@ -1,15 +1,8 @@
-from typing import Optional
+from typing import List
 
 from pydantic import BaseModel
 
 
 class PhrasePydantic(BaseModel):
-    key: str
-    message: str
-    tags: Optional[list] = []
-
-
-class PhraseUpdatePydantic(BaseModel):
-    key: Optional[str]
-    message: Optional[str]
-    tags: Optional[list]
+    title: str
+    secrets: List[dict]

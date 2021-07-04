@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <router-link to="/" class="pl-5" @click.native="openModal">
-        {{item.key}}
+        {{item.title}}
     </router-link>
     <v-dialog
       v-model="dialog"
@@ -9,10 +9,10 @@
     >
       <v-card>
         <v-card-title class="text-h5">
-          {{item.key}}
+          {{item.title}}
         </v-card-title>
-        <v-card-text>
-            {{decodedMessage ? decodedMessage : item.message}} 
+        <v-card-text v-for="(secret, index) in decodedSecrets" :key="index">
+            <b>{{secret.key}}</b>: <i>{{secret.message}}</i>
             
             <v-tooltip right v-model="tooltip">
                 <template v-slot:activator="{}">
@@ -58,7 +58,7 @@
             return {
                 dialog: false,
                 tooltip: false,
-                decodedMessage: null
+                decodedSecrets: null
             }
         },
         methods: {
@@ -68,11 +68,11 @@
             openModal() {
                 this.dialog = true
                 axios.get(parseUrl('phrase-decode', [this.item.id]))
-                    .then(res => this.decodedMessage = res.data.message)
+                    .then(res => this.decodedSecrets = res.data.secrets)
                     .catch(error => console.log(error))
             },
-            copy() {
-                navigator.clipboard.writeText(this.decodedMessage)
+            copy(index) {
+                navigator.clipboard.writeText(this.decodedMessages[index].message)
                 this.tooltip = true
                 setTimeout(() => this.tooltip = false, 700);
             }

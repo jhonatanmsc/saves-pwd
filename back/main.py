@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 
 from .app.models import Phrase
-from .app.pydantics import PhrasePydantic, PhraseUpdatePydantic
+from .app.pydantics import PhrasePydantic
 from .app.settings import app
 
 
@@ -24,34 +24,32 @@ def decode_phrase(phrase_id: str):
     m_phrase = Phrase.objects(id=phrase_id).first()
     if m_phrase is None:
         raise HTTPException(status_code=404, detail="This phrase doesn't exists.")
-    return {"message": m_phrase.message}
+    return {"secrets": m_phrase.secrets}
 
 
 @app.post("/create-phrase")
 def create_phrase(phrase: PhrasePydantic):
-    if Phrase.objects(key=phrase.key).first() is not None:
+    if Phrase.objects(title=phrase.title).first() is not None:
         raise HTTPException(status_code=400, detail="The phrase already exists.")
 
-    m_phrase = Phrase(key=phrase.key, tags=phrase.tags)
-    m_phrase.set_message(phrase.message)
+    m_phrase = Phrase(title=phrase.title)
+    m_phrase.set_secrets(phrase.secrets)
     m_phrase.save()
-    return {'message': f'Phrase with key {phrase.key} created.'}
+    return {'message': f'Phrase with title {phrase.title} created.'}
 
 
 @app.put("/update-phrase/{phrase_id}")
-def update_phrase(phrase_id: str, phrase: PhraseUpdatePydantic):
+def update_phrase(phrase_id: str, phrase: PhrasePydantic):
     m_phrase = Phrase.objects(id=phrase_id).first()
     if m_phrase is None:
         raise HTTPException(status_code=404, detail="This phrase doesn't exists.")
 
-    if phrase.key is not None:
-        m_phrase.key = phrase.key
-    if phrase.message is not None:
-        m_phrase.set_message(phrase.message)
-    if phrase.tags is not None:
-        m_phrase.tags = phrase.tags
+    if phrase.title is not None:
+        m_phrase.title = phrase.title
+    if phrase.secrets is not None:
+        m_phrase.set_secrets(phrase.secrets)
     m_phrase.save()
-    return {'message': f'Phrase with key {phrase.key} updated.'}
+    return {'message': f'Phrase with title {phrase.title} updated.'}
 
 
 @app.delete("/remove-phrase/{phrase_id}")
@@ -61,4 +59,4 @@ def remove_phrase(phrase_id: str):
         raise HTTPException(status_code=404, detail="This phrase doesn't exists.")
 
     m_phrase.delete()
-    return {'message': f'Phrase with key {m_phrase.key} deleted.'}
+    return {'message': f'Phrase with title {m_phrase.title} deleted.'}

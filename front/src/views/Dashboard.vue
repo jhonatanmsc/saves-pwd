@@ -8,11 +8,11 @@
                     :items-per-page="10"
                     class="elevation-1"
                 >
-                <template v-slot:item.key={item}>
+                <template v-slot:item.title={item}>
                     <phrase-detail :item="item"></phrase-detail>
                 </template>
-                <template v-slot:item.tags={item}>
-                    <v-chip color="blue lighten-3" v-for="tag in item.tags" :key="tag">{{tag}}</v-chip>
+                <template v-slot:item.secrets={item}>
+                    {{item.secrets}}
                 </template>
                 <template v-slot:item.actions={item}>
                     <remove-phrase-modal :item="item"></remove-phrase-modal>
@@ -42,13 +42,12 @@
         data: () => ({
             headers: [
                 {
-                    text: 'Key',
+                    text: 'Title',
                     align: 'start',
                     sortable: false,
-                    value: 'key',
+                    value: 'title',
                 },
-                { text: 'Message', value: 'message' },
-                { text: 'Tags', value: 'tags' },
+                { text: 'secrets', value: 'secrets' },
                 { text: 'Created at', value: 'created_at' },
                 { text: 'Actions', value: 'actions' },
             ],

@@ -6,53 +6,90 @@
             v-slot="{ invalid }"
         >
             <form @submit.prevent="submit">
-            <validation-provider
-                v-slot="{ errors }"
-                name="key"
-                rules="required|max:30"
-            >
-                <v-text-field
-                v-model="key"
-                :counter="30"
-                :error-messages="errors"
-                label="Key"
-                required
-                ></v-text-field>
-            </validation-provider>
-            <validation-provider
-                v-slot="{ errors }"
-                name="message"
-                rules="required"
-            >
-                <v-text-field
-                v-model="message"
-                :error-messages="errors"
-                label="Message"
-                required
-                ></v-text-field>
-            </validation-provider>
-
-            <v-combobox
-            clearable
-            filled
-            hide-selected
-            multiple
-            small-chips
-            v-model="select"
-            :items="tags"
-            label="Tags"
-            ></v-combobox>
-
-            <v-btn
-                class="mr-4"
-                type="submit"
-                :disabled="invalid"
-            >
-                submit
-            </v-btn>
-            <v-btn @click="clear">
-                clear
-            </v-btn>
+                <v-row>
+                    <v-col md="12">
+                        <validation-provider
+                            v-slot="{ errors }"
+                            name="title"
+                            rules="required|max:30"
+                        >
+                            <v-text-field
+                            v-model="title"
+                            :counter="15"
+                            :error-messages="errors"
+                            label="Title"
+                            required
+                            ></v-text-field>
+                        </validation-provider>
+                    </v-col>
+                </v-row>
+                <v-row v-for="(secret, index) in secrets" :key="index">
+                    <v-col md="12">
+                        <h4>secret #{{index+1}}</h4>
+                    </v-col>
+                    <v-col md="3">
+                        <validation-provider
+                            v-slot="{ errors }"
+                            :name="`key_${index}`"
+                            rules="required|max:30"
+                        >
+                            <v-text-field
+                            v-model="secret.key"
+                            :counter="30"
+                            :error-messages="errors"
+                            label="Key"
+                            required
+                            ></v-text-field>
+                        </validation-provider>
+                    </v-col>
+                    <v-col md="6">
+                        <validation-provider
+                            v-slot="{ errors }"
+                            :name="`message_${index}`"
+                            rules="required"
+                        >
+                            <v-text-field
+                            v-model="secret.message"
+                            :error-messages="errors"
+                            label="Message"
+                            required
+                            ></v-text-field>
+                        </validation-provider>
+                    </v-col>
+                    <v-col md="3">
+                        <v-btn
+                        icon
+                        color="error"
+                        :disabled="index === 0"
+                        @click="rmSecret(index)"
+                        >
+                        <v-icon>mdi-trash-can-outline</v-icon>
+                        </v-btn>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col md="12">
+                        <v-btn
+                        icon
+                        color="warning"
+                        @click="addSecret"
+                        >
+                        <v-icon>mdi-plus</v-icon>
+                        </v-btn>
+                    </v-col>
+                    <v-col md="12">
+                        <v-btn
+                            class="mr-4"
+                            type="submit"
+                            :disabled="invalid"
+                        >
+                            submit
+                        </v-btn>
+                        <v-btn @click="clear">
+                            clear
+                        </v-btn>
+                    </v-col>
+                </v-row>
             </form>
         </validation-observer>
     </v-container>
@@ -84,27 +121,23 @@
             ValidationObserver,
         },
         data: () => ({
-            key: '',
-            message: '',
-            tags: [],
-            select: []
+            title: '',
+            secrets: [{key: "", message: ""}],
         }),
         mounted() {
             if (this.$route.query.id !== undefined)
                 axios.get(parseUrl('phrase-detail', [this.$route.query.id]))
                     .then(res => {
-                        this.key = res.data.key
-                        this.message = res.data.message
-                        this.select = res.data.tags
+                        this.title = res.data.title
+                        this.secrets = res.data.secrets
                     })
         },
         methods: {
             submit () {
                 this.$refs.observer.validate()
                 let payload = {
-                    key: this.key,
-                    message: this.message,
-                    tags: this.select
+                    title: this.title,
+                    secrets: this.secrets
                 }
                 if (this.$route.query.id === undefined)
                     axios.post(parseUrl('phrase-create'), payload)
@@ -115,10 +148,15 @@
                         .then(() => this.$router.push('/'))
                         .catch(error => console.log(error))
             },
+            addSecret () {
+                this.secrets.push({key: "", message: ""})
+            },
+            rmSecret (index) {
+                this.secrets.splice(index, 1)
+            },
             clear () {
-                this.key = ''
-                this.message = ''
-                this.tags = []
+                this.title = ''
+                this.secrets = [{key: "", message: ""}]
                 this.$refs.observer.reset()
             },
         },
