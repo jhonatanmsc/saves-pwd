@@ -8,6 +8,7 @@ const parseUrl = (urlName, args=[]) => {
         case 'phrase-update': return `${API_URL}/update-phrase/${args[0]}`
         case 'phrase-delete': return `${API_URL}/remove-phrase/${args[0]}`
         case 'phrase-decode': return `${API_URL}/decode-phrase/${args[0]}`
+        case 'backup': return `${API_URL}/backup/save`
     }
 }
 

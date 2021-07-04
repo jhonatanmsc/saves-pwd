@@ -15,14 +15,14 @@ class Phrase(Document):
             "id": str(self.pk),
             "title": self.title,
             "secrets": self.secrets if decoded else len(self.secrets),
-            "created_at": self.created_at
+            "created_at": str(self.created_at)
         }
 
     @property
     def secrets(self):
         return [{
                 "key": secret["key"],
-                "message": fernet.decrypt(bytes(secret["message"], 'utf-8'))
+                "message": fernet.decrypt(bytes(secret["message"], 'utf-8')).decode("utf-8")
             } for secret in self._secrets]
 
     def encrypt(self):

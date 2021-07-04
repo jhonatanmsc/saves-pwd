@@ -1,3 +1,5 @@
+import json
+
 from fastapi import HTTPException
 
 from .app.models import Phrase
@@ -60,3 +62,15 @@ def remove_phrase(phrase_id: str):
 
     m_phrase.delete()
     return {'message': f'Phrase with title {m_phrase.title} deleted.'}
+
+
+@app.get("/backup/save")
+def backup():
+    phrases = Phrase.objects
+    res = []
+    for phrase in phrases:
+        res.append(phrase.as_json(decoded=True))
+    with open('data.json', 'w') as outfile:
+        as_json = json.dumps(res, indent=4)
+        outfile.write(as_json)
+    return {"message": res}

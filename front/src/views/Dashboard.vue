@@ -2,6 +2,22 @@
     <base-layout>
         <template v-slot:content>
             <v-container>
+                <v-row>
+                    <v-col 
+                        md="12"
+                    >
+                        <v-btn
+                        class="float-right"
+                        color="success"
+                        @click="backup"
+                        >
+                        backup
+                        <v-icon right dark >mdi-download-circle-outline</v-icon>
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </v-container>
+            <v-container>
                 <v-data-table
                     :headers="headers"
                     :items="phrases"
@@ -61,6 +77,13 @@
                         return p
                     }))
                 .catch(error => console.log(error))
+        },
+        methods: {
+            backup() {
+                axios.get(parseUrl('backup'))
+                    .then(res => alert(res.data.message))
+                    .catch(error => console.log(error))
+            }
         }
     }
 </script>
